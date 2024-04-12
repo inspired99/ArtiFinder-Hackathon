@@ -3,6 +3,6 @@ packaging
 fastapi
 uvicorn
 torch
-PIL
+pillow
 torchvision
 lightning
