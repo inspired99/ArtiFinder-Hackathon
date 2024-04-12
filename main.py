@@ -1,7 +1,8 @@
-from fastapi import FastAPI
-import asyncio
 import uvicorn
 
+from fastapi import FastAPI
+from api.arts_api import get_arts_info_helper
+from api.models import ArtQuery
 from ml_framework.ml_framework import MLFramework
 from embeddings_database.embeddings_database import EmbeddingsDatabase
 from exhibits_database.exhibits_database import ExhibitsDatabase
@@ -10,21 +11,17 @@ from concurrent.futures import ProcessPoolExecutor
 
 app = FastAPI()
 
-
 # POST: add new exhibit
 @app.post("/add_exhibit/")
 async def add_exhibit(query):
     return
 
+@app.post("/get_arts_info/", response_model=list)
+async def get_arts_info(query: ArtQuery):
+    
+    result = get_arts_info_helper(query)
 
-# GET: get exhibits based on filters
-@app.get("/get_exhibits/")
-async def get(query):
-    # If there is an image: ask for emb with ml_framework, then ask for similar images with embeddings_database
-
-    # Filter exhibits (all or found above)
-
-    return
+    return result
 
 
 with ProcessPoolExecutor(max_workers=1) as ml_executor:
