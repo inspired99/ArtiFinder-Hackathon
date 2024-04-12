@@ -4,7 +4,7 @@ import json
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import Optional
-from models import ArtQuery
+from api.models import ArtQuery
 
 def get_arts_info_helper(query: ArtQuery):
     conn = psycopg2.connect(
