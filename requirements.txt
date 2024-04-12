@@ -1,0 +1,8 @@
+faiss-cpu
+packaging
+fastapi
+uvicorn
+torch
+PIL
+torchvision
+lightning
