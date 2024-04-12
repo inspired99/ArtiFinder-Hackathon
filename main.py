@@ -11,7 +11,7 @@ app = FastAPI()
 async def add_exhibit(query):
     return
 
-@app.post("/get_arts_info/", response_model=list)
+@app.post("/api/get_arts_info/", response_model=list)
 async def get_arts_info(query: ArtQuery):
     
     result = get_arts_info_helper(query)
