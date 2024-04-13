@@ -1,7 +1,8 @@
+from contextlib import contextmanager
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from contextlib import contextmanager
 
+import asyncio
 from api.constants import DATABASE_HOST, DATABASE_NAME, DATABASE_PASS, DATABASE_USER
 
 DATABASE_URL = f"dbname={DATABASE_NAME} user={DATABASE_USER} password={DATABASE_PASS} host={DATABASE_HOST}"
@@ -14,7 +15,6 @@ def get_db_connection():
     finally:
         conn.close()
 
-
 def get_db_cursor(commit=False):
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
@@ -24,3 +24,7 @@ def get_db_cursor(commit=False):
                     conn.commit()
             finally:
                 cursor.close()
+
+async def run_db_query(func, *args, **kwargs):
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, func, *args, **kwargs)

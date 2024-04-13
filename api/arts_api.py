@@ -1,7 +1,7 @@
 from api.models import ArtQuery
 
 
-async def get_arts_info_helper(query: ArtQuery, cursor):
+def get_arts_info_helper(query: ArtQuery, cursor):
     base_query = "SELECT * FROM images"
     conditions = []
     params = []

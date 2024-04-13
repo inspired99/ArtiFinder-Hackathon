@@ -1,29 +1,22 @@
 
-from fastapi import File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form
+import os
+import uuid
 
 from api.constants import IMAGES_PATH
-from api.db import get_db_cursor
+
 
 async def upload_image_helper(
     file: UploadFile = File(...),
-    description: str = Form(...),
-    category: str = Form(...),
-    title: str = Form(...),
-    author: str = Form(None),
-    date: str = Form(None)
 ):
     file_location = f"{IMAGES_PATH}/{file.filename}"
+    unique_id = uuid.uuid4()
+    filename = f"{unique_id}_{file.filename}"
+    file_location = f"{IMAGES_PATH}/{filename}"
+
+    os.makedirs(os.path.dirname(file_location), exist_ok=True)
+
     with open(file_location, "wb+") as file_object:
         file_object.write(await file.read())
-
-
-    with get_db_cursor(commit=True) as cursor:
-        cursor.execute(
-            """
-            INSERT INTO images (path, description, category, title, author, date)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            """,
-            (file_location, description, category, title, author, date)
-        )
 
     return {"info": "File saved successfully.", "path": file_location}

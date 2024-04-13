@@ -1,6 +1,5 @@
 faiss-cpu
 packaging
-fastapi
 uvicorn
 torch
 pillow
@@ -9,3 +8,5 @@ lightning
 pydantic
 psycopg2
 python-dotenv
+python-multipart
+fastapi[all]
