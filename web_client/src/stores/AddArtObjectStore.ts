@@ -7,6 +7,7 @@ export const useAddArtObjectStore = defineStore('AddArtObjectStore', () => {
     description: string;
     image: File;
     imageUrl: string;
+    path: string;
     category: string;
   }>>({});
 
@@ -21,7 +22,7 @@ export const useAddArtObjectStore = defineStore('AddArtObjectStore', () => {
       });
 
       const data = await response.json();
-      console.log(data);
+      addItem.path = data.path;
       return data;
     }
 
@@ -32,10 +33,10 @@ export const useAddArtObjectStore = defineStore('AddArtObjectStore', () => {
     if (
       addItem?.title &&
       addItem?.description &&
-      addItem?.imageUrl &&
+      addItem?.path &&
       addItem?.category
     ) {
-      const response = await fetch('/api/add', {
+      const response = await fetch('/api/add_image', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +44,7 @@ export const useAddArtObjectStore = defineStore('AddArtObjectStore', () => {
         body: JSON.stringify({
           title: addItem.title,
           description: addItem.description,
-          path: addItem.imageUrl,
+          path: addItem.path,
           category: addItem.category,
         }),
       });

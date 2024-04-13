@@ -25,10 +25,10 @@ defineProps({
         </template>
         <template v-slot:default>
             <div class="column tw-p-8">
-                <div class="column tw-pb-8">
+                <div class="column tw-pb-4">
                     <CUploadImage v-model:image-model="imageModel" />
                 </div>
-                <div class="column tw-pb-8">
+                <div class="column tw-pb-4">
                     <q-select outlined v-model="selectedCategory" :options="categoryOptions" label="Категория" />
                 </div>
             </div>

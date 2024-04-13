@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import CPopUp from 'src/components/CPopUp.vue';
 import CUploadImage from 'src/components/CUploadImage.vue';
+import { useAddArtObjectStore } from 'src/stores/AddArtObjectStore';
 
 const isVisible = defineModel<boolean>({ default: false });
 
 const imageModel = defineModel<File>('imageModel');
 const description = defineModel<string>('description', { default: '' });
 const selectedCategory = defineModel<string>('category', { default: '' });
+
+const { uploadImage, createItem, addItem } = useAddArtObjectStore();
+
+const upload = async () => {
+    await uploadImage();
+    await createItem();
+};
 
 defineEmits<{
     (e: 'submit'): void;
@@ -31,13 +39,15 @@ defineProps({
         </template>
         <template v-slot:default>
             <div class="column tw-p-8">
-                <div class="column tw-pb-8">
+                <div class="column tw-pb-4">
                     <CUploadImage v-model:imageModel="imageModel" />
                 </div>
-                <div class="column tw-pb-8">
+                <q-input class="column tw-pb-4" outlined v-model="addItem.title" label="Название" type="text" />
+
+                <div class="column tw-pb-4">
                     <q-select outlined v-model="selectedCategory" :options="categoryOptions" label="Категория" />
                 </div>
-                <div class="column">
+                <div class="column tw-pb-4">
                     <q-input outlined v-model="description" label="Описание" type="textarea" />
                 </div>
                 <q-btn class="tw-mt-8" label="Сгенерировать" color="primary" @click="$emit('submit')" />
@@ -45,7 +55,7 @@ defineProps({
         </template>
         <template v-slot:footer>
             <div class="row justify-start tw-p-8">
-                <q-btn label="Отправить" color="primary" @click="$emit('submit')" outline />
+                <q-btn label="Отправить" color="primary" @click="upload" outline />
                 <q-btn class="tw-mx-2" label="Отменить" color="negative" @click="isVisible = false" />
             </div>
         </template>
