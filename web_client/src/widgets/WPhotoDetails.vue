@@ -29,10 +29,10 @@ defineProps({
                         </div>
                     </q-card-section>
 
-                    <q-card-actions>
+                    <!-- <q-card-actions>
                         <q-btn flat color="primary" label="Share" />
                         <q-btn flat color="secondary" label="Book" />
-                    </q-card-actions>
+                    </q-card-actions> -->
                 </q-card>
             </div>
         </template>
