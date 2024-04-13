@@ -8,11 +8,11 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 # POST: add new exhibit
-@api_router.post("/add_exhibit/")
+@api_router.post("add_exhibit")
 async def add_exhibit(query):
     return
 
-@api_router.post("/get_arts_info/", response_model=list)
+@api_router.post("get_arts_info", response_model=list)
 async def get_arts_info(query: ArtQuery):
     
     result = get_arts_info_helper(query)

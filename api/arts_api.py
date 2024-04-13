@@ -4,13 +4,14 @@ import json
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import Optional
+from api.constants import DATABASE_PASS, DATABASE_USER
 from api.models import ArtQuery
 
 def get_arts_info_helper(query: ArtQuery):
     conn = psycopg2.connect(
         dbname="artifinder_db", 
-        user="your_username", 
-        password="your_password", 
+        user=DATABASE_USER, 
+        password=DATABASE_PASS, 
         host="localhost"
     )
     cur = conn.cursor()
@@ -30,6 +31,7 @@ def get_arts_info_helper(query: ArtQuery):
     sql = f"SELECT id, path, description, category, title, author, date FROM images WHERE {where_clause}"
     cur.execute(sql)
     records = cur.fetchall()
+    print(records)
     cur.close()
     conn.close()
 
