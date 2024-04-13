@@ -6,3 +6,6 @@ torch
 pillow
 torchvision
 lightning
+pydantic
+psycopg2
+python-dotenv
