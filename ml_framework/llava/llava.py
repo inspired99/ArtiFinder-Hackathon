@@ -19,10 +19,12 @@ class Llava:
     def __init__(self) -> None:
         self.model_path = "4bit/llava-v1.5-13b-3GB"
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.__load_model__()
+
         self.model = None
         self.tokenizer = None
         self.image_processor = None
+
+        self.__load_model__()
 
     def __load_model__(self) -> None:
         """
