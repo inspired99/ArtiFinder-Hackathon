@@ -1,7 +1,7 @@
-from api.models import ArtQuery
+from api.models import ArtModel
 
 
-def get_arts_info_helper(query: ArtQuery, cursor):
+def get_arts_info_helper(query: ArtModel, cursor):
     base_query = "SELECT * FROM images"
     conditions = []
     params = []
@@ -25,3 +25,11 @@ def get_arts_info_helper(query: ArtQuery, cursor):
     result = [dict(r) for r in records]
 
     return result
+
+
+def insert_image_helper(art: ArtModel, cursor):
+    cursor.execute(
+        "INSERT INTO images (title, path, category, description) VALUES (%s, %s, %s, %s)",
+        (art.title, art.path, art.category, art.description)
+    )
+

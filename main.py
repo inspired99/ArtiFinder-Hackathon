@@ -1,9 +1,9 @@
 import uvicorn
 
 from fastapi import Depends, FastAPI, APIRouter, File, HTTPException, UploadFile
-from api.arts_api import get_arts_info_helper
+from api.arts_api import get_arts_info_helper, insert_image_helper
 from api.db import get_db_cursor, run_db_query
-from api.models import ArtQuery
+from api.models import ArtModel
 from api.upload import upload_image_helper
 
 
@@ -16,10 +16,19 @@ async def get_arts_info():
 
 
 @router.post("/get_arts_info", response_model=list)
-async def get_arts_info(query: ArtQuery, cursor=Depends(get_db_cursor)):
+async def get_arts_info(query: ArtModel, cursor=Depends(get_db_cursor)):
     try:
         result = await run_db_query(get_arts_info_helper, query, cursor)
         return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/add_image", response_model=ArtModel)
+async def add_image(art: ArtModel, cursor=Depends(get_db_cursor)):
+    try:
+        await run_db_query(insert_image_helper, art, cursor)
+        return art
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
