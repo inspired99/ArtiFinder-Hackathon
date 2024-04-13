@@ -3,7 +3,7 @@
     <CInfiniteScroll :items="items" @card-click="(item) => { isVisible = true; currentArtItem = item }"
       @load-more="loadMore" class="tw-m-auto tw-pt-4" />
   </q-page>
-  <WPhotoDetails :art-item="currentArtItem" v-model="isVisible" />
+  <WPhotoDetails :artItem="currentArtItem" v-model="isVisible" />
 </template>
 
 <script setup lang="ts">
@@ -12,6 +12,15 @@ import CInfiniteScroll from 'src/components/CInfiniteScroll.vue';
 import { ArtItemT } from 'src/entities/ArtItem';
 import WPhotoDetails from 'src/widgets/WPhotoDetails.vue';
 import { provide, ref } from 'vue';
+
+// $q.notify.registerType('my-notif', {
+//       icon: 'announcement',
+//       progress: true,
+//       color: 'brown',
+//       textColor: 'white',
+//       classes: 'glossy'
+//     })
+
 
 const $q = useQuasar();
 const currentArtItem = ref();
