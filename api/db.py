@@ -1,4 +1,3 @@
-from fastapi import Depends, FastAPI
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
