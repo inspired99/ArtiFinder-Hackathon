@@ -1,6 +1,6 @@
 import uvicorn
 
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from api.arts_api import get_arts_info_helper
 from api.models import ArtQuery
 
@@ -16,8 +16,12 @@ async def get_arts_info():
 async def get_arts_info(query: ArtQuery):
     
     result = await get_arts_info_helper(query)
+    try:
+        result = await get_arts_info_helper(query)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-    return result
 
 
 app = FastAPI(

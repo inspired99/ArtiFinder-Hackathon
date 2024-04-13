@@ -5,19 +5,18 @@ from contextlib import contextmanager
 
 from api.constants import DATABASE_PASS, DATABASE_USER
 
+DATABASE_URL = f"dbname=antifinder_db user={DATABASE_USER} password={DATABASE_PASS} host=localhost"
+
 @contextmanager
 def get_db_connection():
-    conn = psycopg2.connect(
-        dbname="artifinder_db", 
-        user=DATABASE_USER, 
-        password=DATABASE_PASS, 
-        host="localhost"
-    )
+    conn = psycopg2.connect(DATABASE_URL)
     try:
         yield conn
     finally:
         conn.close()
 
-def get_db_cursor(conn=Depends(get_db_connection)):
-    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-        yield cursor
+# Dependency that can be used in path operations
+def get_db_cursor():
+    with get_db_connection() as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            yield cursor
