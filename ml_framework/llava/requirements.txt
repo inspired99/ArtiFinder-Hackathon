@@ -1,0 +1,5 @@
+transformers==4.36.2
+numpy
+torch
+bitsandbytes
+accelerate
