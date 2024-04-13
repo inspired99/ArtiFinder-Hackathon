@@ -14,7 +14,7 @@ defineProps({
 </script>
 
 <template>
-    <CPopUp v-model="isVisible" :width="700">
+    <CPopUp position="standard" v-model="isVisible" :width="700">
         <template v-slot:header>
             <div class="row justify-between tw-p-8 tw-border-b tw-border-neutral-200">
                 <h3 class="tw-text-neutral-700">

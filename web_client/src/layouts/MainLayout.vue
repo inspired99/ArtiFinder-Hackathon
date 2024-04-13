@@ -2,9 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header bordered class="text-primary bg-white">
       <q-toolbar class="tw-h-24">
-        <q-btn flat label="CatHackers" class="tw-absolute" />
-        <!-- <q-space /> -->
-
+        <q-btn flat label="ArtiFinder" class="tw-absolute" />
         <WToolBar />
       </q-toolbar>
     </q-header>
