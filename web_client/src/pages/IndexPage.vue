@@ -1,16 +1,11 @@
 <template>
   <q-page class="column" style="width: 100%">
-    <!-- <header
-      class="tw-container tw-mx-auto tw-w-full tw-bg-white tw-shadow-md tw-p-4 tw-rounded-md tw-mb-4 tw-z-10 tw-sticky tw-top-3"> -->
-    <WSearchHeader />
-    <!-- </header> -->
     <CInfiniteScroll :items="items" @card-click="console.log" @load-more="loadMore" class="tw-m-auto tw-pt-4" />
   </q-page>
 </template>
 
 <script setup lang="ts">
 import CInfiniteScroll from 'src/components/CInfiniteScroll.vue';
-import WSearchHeader from 'src/widgets/WSearchHeader.vue';
 import { ref } from 'vue';
 
 const items = ref([
