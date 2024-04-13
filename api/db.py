@@ -14,8 +14,13 @@ def get_db_connection():
     finally:
         conn.close()
 
-# Dependency that can be used in path operations
-def get_db_cursor():
+
+def get_db_cursor(commit=False):
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            yield cursor
+            try:
+                yield cursor
+                if commit:
+                    conn.commit()
+            finally:
+                cursor.close()
