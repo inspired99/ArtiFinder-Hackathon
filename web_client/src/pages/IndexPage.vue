@@ -1,30 +1,113 @@
 <template>
   <q-page class="column" style="width: 100%">
-    <!-- <header
-      class="tw-container tw-mx-auto tw-w-full tw-bg-white tw-shadow-md tw-p-4 tw-rounded-md tw-mb-4 tw-z-10 tw-sticky tw-top-3"> -->
-    <WSearchHeader />
-    <!-- </header> -->
-    <CInfiniteScroll :items="items" @card-click="console.log" @load-more="loadMore" class="tw-m-auto tw-pt-4" />
+    <CInfiniteScroll :items="items" @card-click="(item) => { isVisible = true; currentArtItem = item }"
+      @load-more="loadMore" class="tw-m-auto tw-pt-4" />
   </q-page>
+  <WPhotoDetails :artItem="currentArtItem" v-model="isVisible" />
 </template>
 
 <script setup lang="ts">
+import { useQuasar } from 'quasar';
 import CInfiniteScroll from 'src/components/CInfiniteScroll.vue';
-import WSearchHeader from 'src/widgets/WSearchHeader.vue';
-import { ref } from 'vue';
+import { ArtItemT } from 'src/entities/ArtItem';
+import WPhotoDetails from 'src/widgets/WPhotoDetails.vue';
+import { provide, ref } from 'vue';
 
-const items = ref([
-  { id: 1, src: 'https://staticg.sportskeeda.com/editor/2023/09/d0917-16959581724408-1920.jpg', description: 'Two Girls in White and Black Dress Standing on Brown Wooden Dock during Daytime', tags: ['Bull shit', 'Yet another shit'] },
-  { id: 2, src: 'https://staticg.sportskeeda.com/editor/2023/09/d0917-16959581724408-1920.jpg', description: 'Two Girls in White and Black Dress Standing on Brown Wooden Dock during Daytime', tags: ['Bull shit', 'Yet another shit'] },
-  { id: 3, src: 'https://staticg.sportskeeda.com/editor/2023/09/d0917-16959581724408-1920.jpg', description: 'Two Girls in White and Black Dress Standing on Brown Wooden Dock during Daytime', tags: ['Bull shit', 'Yet another shit'] },
-]);
+// $q.notify.registerType('my-notif', {
+//       icon: 'announcement',
+//       progress: true,
+//       color: 'brown',
+//       textColor: 'white',
+//       classes: 'glossy'
+//     })
+
+
+const $q = useQuasar();
+const currentArtItem = ref();
+
+provide('loading', {
+  show: () => $q.loading.show({
+    message: 'Подождите, идет загрузка...'
+  }),
+  hide: () => $q.loading.hide()
+});
+
+const isVisible = ref(false);
+
+const items = ref<ArtItemT[]>(
+  [
+    {
+      id: 1,
+      title: 'Книга. «К.Э. Циолковский известный и неизвестный»/ сост. А.Л. Голованов, Е.А. Тимошенкова. - М.: «ГЕЛИОС», 2023.',
+      description: 'Книга в мягкой обложке. Рассказывает о жизненном пути великого человека, основоположника теоретической космонавтики Константина Эдуардовича Циолковского.',
+      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63103841?originalName=3659866.jpg',
+      tags: ['Книги']
+    },
+    {
+      id: 2,
+      title: 'Брошюра. Как собирать горные породы и минералы. 45 стр.',
+      description: 'Местонахождение: Муниципальное бюджетное учреждение культуры "Краснотурьинский краеведческий музей',
+      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63099146?originalName=3826657.jpg',
+      tags: ['Книги']
+    },
+    {
+      id: 3,
+      title: `Шмагин Вячеслав Николаевич "Скорбящий ангел"`,
+      description: `Местонахождение
+Федеральное государственное бюджетное учреждение культуры "Государственный центральный музей современной истории России"`,
+      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63096049?originalName=46116_3.jpg',
+      tags: ['Живопись']
+    },
+    {
+      id: 4,
+      title: 'Книга. «К.Э. Циолковский известный и неизвестный»/ сост. А.Л. Голованов, Е.А. Тимошенкова. - М.: «ГЕЛИОС», 2023.',
+      description: 'Книга в мягкой обложке. Рассказывает о жизненном пути великого человека, основоположника теоретической космонавтики Константина Эдуардовича Циолковского.',
+      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63103841?originalName=3659866.jpg',
+      tags: ['Книги']
+    },
+    {
+      id: 5,
+      title: 'Брошюра. Как собирать горные породы и минералы. 45 стр.',
+      description: 'Местонахождение: Муниципальное бюджетное учреждение культуры "Краснотурьинский краеведческий музей',
+      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63099146?originalName=3826657.jpg',
+      tags: ['Книги']
+    },
+    {
+      id: 6,
+      title: `Шмагин Вячеслав Николаевич "Скорбящий ангел"`,
+      description: `Местонахождение
+Федеральное государственное бюджетное учреждение культуры "Государственный центральный музей современной истории России"`,
+      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63096049?originalName=46116_3.jpg',
+      tags: ['Живопись']
+    },
+  ]
+);
 
 const loadMore = (index: number, done: () => void) => {
   setTimeout(() => {
     items.value.push(
-      { id: items.value.length + 1, src: 'https://staticg.sportskeeda.com/editor/2023/09/d0917-16959581724408-1920.jpg', description: 'Two Girls in White and Black Dress Standing on Brown Wooden Dock during Daytime', tags: ['Bull shit', 'Yet another shit', 'sdfsdfsdf', 'sdfdsfsd', 'sdfdsf', 'sdfdsf'] },
-      { id: items.value.length + 2, src: 'https://staticg.sportskeeda.com/editor/2023/09/d0917-16959581724408-1920.jpg', description: 'Two Girls in White and Black Dress Standing on Brown Wooden Dock during Daytime', tags: ['Bull shit', 'Yet another shit'] },
-      { id: items.value.length + 3, src: 'https://staticg.sportskeeda.com/editor/2023/09/d0917-16959581724408-1920.jpg', description: 'Two Girls in White and Black Dress Standing on Brown Wooden Dock during Daytime', tags: ['Bull shit', 'Yet another shit'] },
+      {
+        id: items.value.length + 1,
+        title: 'Книга. «К.Э. Циолковский известный и неизвестный»/ сост. А.Л. Голованов, Е.А. Тимошенкова. - М.: «ГЕЛИОС», 2023.',
+        description: 'Книга в мягкой обложке. Рассказывает о жизненном пути великого человека, основоположника теоретической космонавтики Константина Эдуардовича Циолковского.',
+        imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63103841?originalName=3659866.jpg',
+        tags: ['Книги']
+      },
+      {
+        id: items.value.length + 2,
+        title: 'Брошюра. Как собирать горные породы и минералы. 45 стр.',
+        description: 'Местонахождение: Муниципальное бюджетное учреждение культуры "Краснотурьинский краеведческий музей',
+        imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63099146?originalName=3826657.jpg',
+        tags: ['Книги']
+      },
+      {
+        id: items.value.length + 3,
+        title: `Шмагин Вячеслав Николаевич "Скорбящий ангел"`,
+        description: `Местонахождение
+Федеральное государственное бюджетное учреждение культуры "Государственный центральный музей современной истории России"`,
+        imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63096049?originalName=46116_3.jpg',
+        tags: ['Живопись']
+      },
     );
     done();
   }, 2000);
