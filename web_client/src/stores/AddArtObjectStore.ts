@@ -2,14 +2,16 @@ import { defineStore } from 'pinia';
 import { reactive } from 'vue';
 
 export const useAddArtObjectStore = defineStore('AddArtObjectStore', () => {
-  const addItem = reactive<Partial<{
-    title: string;
-    description: string;
-    image: File;
-    imageUrl: string;
-    path: string;
-    category: string;
-  }>>({});
+  const addItem = reactive<
+    Partial<{
+      title: string;
+      description: string;
+      image: File;
+      imageUrl: string;
+      path: string;
+      category: string;
+    }>
+  >({});
 
   const uploadImage = async () => {
     const formData = new FormData();
@@ -21,8 +23,13 @@ export const useAddArtObjectStore = defineStore('AddArtObjectStore', () => {
         body: formData,
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
       const data = await response.json();
       addItem.path = data.path;
+      addItem.description = 'Загружено. Введите описание...';
       return data;
     }
 

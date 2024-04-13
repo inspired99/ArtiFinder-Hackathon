@@ -12,7 +12,7 @@
                     <div class="absolute-bottom tw-bg-neutral-800 tw-text-white tw-p-2">
                         {{ item.title }}
                         <q-badge rounded class="tw-mx-0.5" :key="item.tag"
-                            color="accent" :label="item.tag" />
+                            color="primary" :label="item.tag" />
                     </div>
                 </q-img>
             </q-card>
@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
 import { ArtItemT } from 'src/entities/ArtItem';
-// import { colors } from 'src/utils/Colors';
+import { colors } from 'src/utils/Colors';
 
 // const colorsLength = colors.length;
 

@@ -7,6 +7,7 @@ export const useSerchArtObjectStore = defineStore('SerchArtObjectStore', () => {
     description: string;
     image: File;
     imageUrl: string;
+    path: string;
     category: string;
   }>>({});
 
@@ -19,8 +20,13 @@ export const useSerchArtObjectStore = defineStore('SerchArtObjectStore', () => {
         method: 'POST',
         body: formData,
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
 
       const data = await response.json();
+      searchItem.path = data.path;
       console.log(data);
       return data;
     }
