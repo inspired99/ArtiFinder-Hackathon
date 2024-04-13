@@ -6,4 +6,3 @@ torch
 pillow
 torchvision
 lightning
-transformers==4.36.2
