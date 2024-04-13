@@ -3,9 +3,9 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
 
-from api.constants import DATABASE_PASS, DATABASE_USER
+from api.constants import DATABASE_HOST, DATABASE_NAME, DATABASE_PASS, DATABASE_USER
 
-DATABASE_URL = f"dbname=antifinder_db user={DATABASE_USER} password={DATABASE_PASS} host=localhost"
+DATABASE_URL = f"dbname={DATABASE_NAME} user={DATABASE_USER} password={DATABASE_PASS} host={DATABASE_HOST}"
 
 @contextmanager
 def get_db_connection():
