@@ -3,6 +3,6 @@ export type ArtItemT = {
   title: string;
   description: string;
   imageUrl: string;
-  tags: string[];
+  tag: string;
 };
 
