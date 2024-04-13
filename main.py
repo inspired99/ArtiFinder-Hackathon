@@ -15,10 +15,8 @@ async def get_arts_info():
 
 @router.post("/get_arts_info", response_model=list)
 async def get_arts_info(query: ArtQuery, cursor=Depends(get_db_cursor)):
-    
-    result = await get_arts_info_helper(query, cursor)
     try:
-        result = await get_arts_info_helper(query)
+        result = await get_arts_info_helper(query, cursor)
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
