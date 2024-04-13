@@ -55,6 +55,9 @@ export const useAddArtObjectStore = defineStore('AddArtObjectStore', () => {
           category: addItem.category,
         }),
       });
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
       const data = await response.json();
       console.log(data);
       return data;
