@@ -35,13 +35,17 @@ class MLFramework:
 		return self.clip.get_emb_size()
 
 
-if __name__ == "__main__":
+async def test_ml():
 	img_path = "~/ArtiFinder/exhibits_database/images/20110231.jpg"
 
 	with ProcessPoolExecutor(max_workers=1) as ml_executor:
 		ml_framework = MLFramework(ml_executor)
 
 		print(ml_framework.get_emb_size())
-		print(ml_framework.get_img_class(img_path))
-		print(ml_framework.get_img_embedding(img_path))
-		print(ml_framework.get_img_description(img_path))
+		print(await ml_framework.get_img_class(img_path))
+		print(await ml_framework.get_img_embedding(img_path))
+		print(await ml_framework.get_img_description(img_path))
+
+
+if __name__ == "__main__":
+	asyncio.run(test_ml())

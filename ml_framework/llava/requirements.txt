@@ -3,3 +3,5 @@ numpy
 torch
 bitsandbytes
 accelerate
+sentencepiece
+protobuf

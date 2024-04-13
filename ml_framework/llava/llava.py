@@ -36,7 +36,6 @@ class Llava:
                       bnb_4bit_use_double_quant=True,
                       bnb_4bit_quant_type='nf4'
                   )}
-        print('here')
         self.model = LlavaLlamaForCausalLM.from_pretrained(self.model_path, low_cpu_mem_usage=True, **kwargs)
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_path, use_fast=False)
 
