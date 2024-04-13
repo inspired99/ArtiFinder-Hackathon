@@ -13,23 +13,35 @@ class MLFramework:
 		self.llava = Llava()
 		self.executor = executor
 
-	async def get_img_embedding(self, img):
+	async def get_img_embedding(self, img_path: str):
 		result = await asyncio.get_running_loop().run_in_executor(
-			self.executor, self.clip.get_img_embedding, img
+			self.executor, self.clip.get_img_embedding, img_path
 		)
 		return result
 
-	async def get_img_class(self, img):
+	async def get_img_class(self, img_path: str):
 		result = await asyncio.get_running_loop().run_in_executor(
-			self.executor, self.resnet.get_img_class, img
+			self.executor, self.resnet.get_img_class, img_path
 		)
 		return result
 
-	async def get_img_description(self, img):
+	async def get_img_description(self, img_path: str):
 		result = await asyncio.get_running_loop().run_in_executor(
-			self.executor, self.llava.caption_image, img
+			self.executor, self.llava.caption_image, img_path
 		)
 		return result
 
 	def get_emb_size(self) -> int:
 		return self.clip.get_emb_size()
+
+
+if __name__ == "__main__":
+	img_path = "~/ArtiFinder/exhibits_database/images/20110231.jpg"
+
+	with ProcessPoolExecutor(max_workers=1) as ml_executor:
+		ml_framework = MLFramework(ml_executor)
+
+		print(ml_framework.get_emb_size())
+		print(ml_framework.get_img_class(img_path))
+		print(ml_framework.get_img_embedding(img_path))
+		print(ml_framework.get_img_description(img_path))
