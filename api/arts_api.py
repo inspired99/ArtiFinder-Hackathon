@@ -1,41 +1,31 @@
 import psycopg2
 import json
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from pydantic import BaseModel, Field
 from typing import Optional
 from api.constants import DATABASE_PASS, DATABASE_USER
+from api.db import get_db_cursor
 from api.models import ArtQuery
 
-def get_arts_info_helper(query: ArtQuery):
-    conn = psycopg2.connect(
-        dbname="artifinder_db", 
-        user=DATABASE_USER, 
-        password=DATABASE_PASS, 
-        host="localhost"
-    )
-    cur = conn.cursor()
 
-    # Build the SQL query dynamically based on provided query parameters
-    query_parts = []
+async def get_arts_info_helper(query: ArtQuery, cursor=Depends(get_db_cursor)):
+    conditions = []
+    params = []
     if query.title:
-        query_parts.append(f"title = '{query.title}'")
+        conditions.append("title = %s")
+        params.append(query.title)
     if query.path:
-        query_parts.append(f"path = '{query.path}'")
+        conditions.append("path = %s")
+        params.append(query.path)
     if query.category:
-        query_parts.append(f"category = '{query.category}'")
+        conditions.append("category = %s")
+        params.append(query.category)
 
-    where_clause = " AND ".join(query_parts) if query_parts else "1=1"
+    where_clause = ' OR '.join(conditions) if conditions else 'TRUE'
+    cursor.execute(f"SELECT * FROM images WHERE {where_clause}", tuple(params))
+    records = cursor.fetchall()
 
-    # Execute the SQL query
-    sql = f"SELECT id, path, description, category, title, author, date FROM images WHERE {where_clause}"
-    cur.execute(sql)
-    records = cur.fetchall()
-    print(records)
-    cur.close()
-    conn.close()
-
-    # Transform the records into a list of dictionaries
     columns = ["id", "path", "description", "category", "title", "author", "date"]
     result = [dict(zip(columns, record)) for record in records]
 

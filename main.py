@@ -15,7 +15,7 @@ async def get_arts_info():
 @router.post("/get_arts_info", response_model=list)
 async def get_arts_info(query: ArtQuery):
     
-    result = get_arts_info_helper(query)
+    result = await get_arts_info_helper(query)
 
     return result
 
