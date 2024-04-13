@@ -9,7 +9,7 @@ from api.db import get_db_cursor
 from api.models import ArtQuery
 
 
-async def get_arts_info_helper(query: ArtQuery, cursor=Depends(get_db_cursor)):
+async def get_arts_info_helper(query: ArtQuery, cursor):
     conditions = []
     params = []
     if query.title:
