@@ -15,15 +15,15 @@ def get_db_connection():
     finally:
         conn.close()
 
-def get_db_cursor(commit=False):
+
+def get_db_cursor():
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             try:
                 yield cursor
-                if commit:
-                    conn.commit()
             finally:
                 cursor.close()
+
 
 async def run_db_query(func, *args, **kwargs):
     loop = asyncio.get_running_loop()
