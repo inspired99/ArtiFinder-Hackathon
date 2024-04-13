@@ -2,6 +2,6 @@ torch
 pandas
 torchvision
 pytorch_lightning
-sklearn
+scikit-learn
 torchmetrics
 pillow
