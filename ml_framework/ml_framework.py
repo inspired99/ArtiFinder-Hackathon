@@ -9,7 +9,7 @@ from concurrent.futures import ProcessPoolExecutor
 class MLFramework:
 	def __init__(self, executor: ProcessPoolExecutor):
 		self.clip = CLIP()
-		self.resnet = ResNet()
+		self.resnet = ResNet(is_train=False)
 		self.llava = Llava()
 		self.executor = executor
 
