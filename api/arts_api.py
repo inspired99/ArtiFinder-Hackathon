@@ -1,3 +1,4 @@
+from api.db import get_db_cursor
 from api.models import ArtModel
 
 
@@ -27,9 +28,9 @@ def get_arts_info_helper(query: ArtModel, cursor):
     return result
 
 
-def insert_image_helper(art: ArtModel, cursor):
+def insert_image_helper(art: ArtModel, cursor) -> ArtModel:
     cursor.execute(
         "INSERT INTO images (title, path, category, description) VALUES (%s, %s, %s, %s)",
         (art.title, art.path, art.category, art.description)
     )
-
+    return art

@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from functools import partial
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
@@ -15,16 +16,22 @@ def get_db_connection():
     finally:
         conn.close()
 
-
-def get_db_cursor():
+@contextmanager
+def get_db_cursor(commit=False):
     with get_db_connection() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            try:
-                yield cursor
-            finally:
-                cursor.close()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        try:
+            yield cursor
+            if commit:
+                conn.commit()
+        except:
+            conn.rollback()
+            raise
+        finally:
+            cursor.close()
+            
 
-
-async def run_db_query(func, *args, **kwargs):
+async def run_db_query(func, cursor, *args, **kwargs):
     loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(None, func, *args, **kwargs)
+    func_with_cursor = partial(func, cursor, *args, **kwargs)
+    return await loop.run_in_executor(None, func_with_cursor)
