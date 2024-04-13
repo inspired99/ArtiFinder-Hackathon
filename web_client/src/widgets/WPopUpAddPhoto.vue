@@ -12,7 +12,7 @@ const imageModel = defineModel<File>('imageModel');
 const description = defineModel<string>('description', { default: '' });
 const selectedCategory = defineModel<string>('category', { default: '' });
 
-const { uploadImage, addItem } = useAddArtObjectStore();
+const { uploadImage, createItem, addItem } = useAddArtObjectStore();
 
 const upload = async (value: unknown) => {
     try {
@@ -26,6 +26,25 @@ const upload = async (value: unknown) => {
     } catch (error) {
         $q.notify({
             message: 'Ошибка загрузки изображения',
+            color: 'negative',
+            position: 'bottom',
+        });
+    }
+};
+
+const CreateItem = async () => {
+    try {
+        await createItem();
+        $q.notify({
+            message: 'Объект добавлен',
+            color: 'positive',
+            position: 'bottom',
+        });
+        reset();
+        isVisible.value = false;
+    } catch (error) {
+        $q.notify({
+            message: 'Ошибка добавления объекта',
             color: 'negative',
             position: 'bottom',
         });
@@ -80,7 +99,7 @@ defineProps({
         </template>
         <template v-slot:footer>
             <div class="row justify-start tw-p-8">
-                <q-btn label="Отправить" color="primary" @click="upload" outline :disable="isSendDisabled" />
+                <q-btn label="Отправить" color="primary" @click="CreateItem" outline :disable="isSendDisabled" />
                 <q-btn class="tw-mx-2" label="Сбросить" color="negative" @click="reset" />
             </div>
         </template>
