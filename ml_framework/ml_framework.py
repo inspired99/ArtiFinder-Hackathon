@@ -1,5 +1,6 @@
-from clip.clip import CLIP
-from resnet.resnet import ResNet
+from ml_framework.clip.clip import CLIP
+from ml_framework.resnet.resnet import ResNet
+from ml_framework.llava.llava import Llava
 
 import asyncio
 from concurrent.futures import ProcessPoolExecutor
@@ -9,6 +10,7 @@ class MLFramework:
 	def __init__(self, executor: ProcessPoolExecutor):
 		self.clip = CLIP()
 		self.resnet = ResNet()
+		self.llava = Llava()
 		self.executor = executor
 
 	async def get_img_embedding(self, img):
@@ -25,7 +27,7 @@ class MLFramework:
 
 	async def get_img_description(self, img):
 		result = await asyncio.get_running_loop().run_in_executor(
-			self.executor, self.clip.get_img_description, img
+			self.executor, self.llava.caption_image, img
 		)
 		return result
 
