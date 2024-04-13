@@ -8,11 +8,11 @@ from api.models import ArtQuery
 router = APIRouter()
 
 
-@router.get("get_arts_info")
+@router.get("/get_arts_info")
 async def get_arts_info():
     return {"message": "Everything is ok"}
 
-@router.post("get_arts_info", response_model=list)
+@router.post("/get_arts_info", response_model=list)
 async def get_arts_info(query: ArtQuery):
     
     result = get_arts_info_helper(query)
