@@ -41,14 +41,14 @@ const items = ref<ArtItemT[]>(
       title: 'Книга. «К.Э. Циолковский известный и неизвестный»/ сост. А.Л. Голованов, Е.А. Тимошенкова. - М.: «ГЕЛИОС», 2023.',
       description: 'Книга в мягкой обложке. Рассказывает о жизненном пути великого человека, основоположника теоретической космонавтики Константина Эдуардовича Циолковского.',
       imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63103841?originalName=3659866.jpg',
-      tags: ['Книги']
+      tag: 'Книги'
     },
     {
       id: 2,
       title: 'Брошюра. Как собирать горные породы и минералы. 45 стр.',
       description: 'Местонахождение: Муниципальное бюджетное учреждение культуры "Краснотурьинский краеведческий музей',
       imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63099146?originalName=3826657.jpg',
-      tags: ['Книги']
+      tag: 'Книги'
     },
     {
       id: 3,
@@ -56,21 +56,21 @@ const items = ref<ArtItemT[]>(
       description: `Местонахождение
 Федеральное государственное бюджетное учреждение культуры "Государственный центральный музей современной истории России"`,
       imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63096049?originalName=46116_3.jpg',
-      tags: ['Живопись']
+      tag: 'Живопись'
     },
     {
       id: 4,
       title: 'Книга. «К.Э. Циолковский известный и неизвестный»/ сост. А.Л. Голованов, Е.А. Тимошенкова. - М.: «ГЕЛИОС», 2023.',
       description: 'Книга в мягкой обложке. Рассказывает о жизненном пути великого человека, основоположника теоретической космонавтики Константина Эдуардовича Циолковского.',
       imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63103841?originalName=3659866.jpg',
-      tags: ['Книги']
+      tag: 'Книги'
     },
     {
       id: 5,
       title: 'Брошюра. Как собирать горные породы и минералы. 45 стр.',
       description: 'Местонахождение: Муниципальное бюджетное учреждение культуры "Краснотурьинский краеведческий музей',
       imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63099146?originalName=3826657.jpg',
-      tags: ['Книги']
+      tag: 'Книги'
     },
     {
       id: 6,
@@ -78,7 +78,7 @@ const items = ref<ArtItemT[]>(
       description: `Местонахождение
 Федеральное государственное бюджетное учреждение культуры "Государственный центральный музей современной истории России"`,
       imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63096049?originalName=46116_3.jpg',
-      tags: ['Живопись']
+      tag: 'Живопись'
     },
   ]
 );
@@ -91,14 +91,14 @@ const loadMore = (index: number, done: () => void) => {
         title: 'Книга. «К.Э. Циолковский известный и неизвестный»/ сост. А.Л. Голованов, Е.А. Тимошенкова. - М.: «ГЕЛИОС», 2023.',
         description: 'Книга в мягкой обложке. Рассказывает о жизненном пути великого человека, основоположника теоретической космонавтики Константина Эдуардовича Циолковского.',
         imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63103841?originalName=3659866.jpg',
-        tags: ['Книги']
+        tag: 'Книги'
       },
       {
         id: items.value.length + 2,
         title: 'Брошюра. Как собирать горные породы и минералы. 45 стр.',
         description: 'Местонахождение: Муниципальное бюджетное учреждение культуры "Краснотурьинский краеведческий музей',
         imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63099146?originalName=3826657.jpg',
-        tags: ['Книги']
+        tag: 'Книги'
       },
       {
         id: items.value.length + 3,
@@ -106,7 +106,7 @@ const loadMore = (index: number, done: () => void) => {
         description: `Местонахождение
 Федеральное государственное бюджетное учреждение культуры "Государственный центральный музей современной истории России"`,
         imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63096049?originalName=46116_3.jpg',
-        tags: ['Живопись']
+        tag: 'Живопись'
       },
     );
     done();

@@ -2,10 +2,10 @@
 import { PropType } from 'vue';
 import CPopUp from 'src/components/CPopUp.vue';
 import { ArtItemT } from 'src/entities/ArtItem';
-import { colors } from 'src/utils/Colors';
+// import { colors } from 'src/utils/Colors';
 
 const isVisible = defineModel<boolean>({ default: false });
-const colorsLength = colors.length;
+// const colorsLength = colors.length;
 
 defineProps({
     artItem: { type: Object as PropType<ArtItemT>, required: true },
@@ -24,8 +24,7 @@ defineProps({
                         <div class="text-h5 q-mt-sm q-mb-xs">{{ artItem.title }}</div>
                         <div class="text-caption text-grey">
                             {{ artItem.description }}
-                            <q-badge rounded class="tw-mx-0.5" v-for="(tag, index) in artItem.tags" :key="tag"
-                                :color="colors[index % colorsLength]" :label="tag" />
+                            <q-badge rounded class="tw-mx-0.5" color="secondary" :label="artItem.tag" />
                         </div>
                     </q-card-section>
 
