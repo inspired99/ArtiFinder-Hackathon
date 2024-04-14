@@ -36,7 +36,8 @@ async def get_arts_info(query: ArtQuery, limit: int = Query(default=10, ge=1), o
 
         img_path = query.path
         emb = ml_framework.get_img_embedding(img_path)
-        img_ids = embeddings_database.find_similar(emb, k=30)
+        img_ids = embeddings_database.find_similar(emb, k=100)
+        logger.info(f"Got ids: {len(img_ids)}")
         with get_db_cursor() as cursor:
             result = await run_db_query(get_arts_info_helper, query, cursor, limit, offset, img_ids)
             logger.info(f"....Sent {len(result)} objects....")
