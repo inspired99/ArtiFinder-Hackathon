@@ -71,6 +71,19 @@ sudo ln -s /path/to/images /var/www/imgs
 ```
 
 
+# Сборка веб-интерфейса
 
+1. Перейдите в папку `/path/to/ArtiFinder/web_client/`
+```bash
+cd /path/to/ArtiFinder/web_client/
+```
+2. Сборка веб-интерфейса
+
+```bash
+npm install
+npm run build
+```
+
+3. Теперь ваш веб-интерфейс успешно собран с помощью npm и готов к развертыванию.
 
 
