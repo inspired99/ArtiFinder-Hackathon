@@ -45,8 +45,8 @@ async def add_image(art: ArtModel):
 
         path = result.path
         emb = ml_framework.get_img_embedding(path)
-        print(path, emb.shape, art_id)
-        # embeddings_database.add_embedding(emb, art_id)
+        logger.info(f"{path}, {emb.shape}, {art_id}")
+        embeddings_database.add_embedding(emb, art_id)
 
         return result
     except Exception as e:
