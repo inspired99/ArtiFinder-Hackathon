@@ -70,7 +70,7 @@ gpasswd -a www-data username
 sudo ln -s /path/to/images /var/www/imgs
 ```
 
-## ML модели
+# ML модели
 
 * Для классификации изображений используется предобученный визуальный трансформер Swin - `swin_tiny_patch4_window7_224`. Для повышения точности модель была дообучена на тренировочных изображениях с применением аугментаций. Веса модели доступны по [ссылке](https://drive.google.com/file/d/1nm1xIbH08QyWKBAJsmDHK-9m8LWYCXkJ/view?usp=sharing).
 
