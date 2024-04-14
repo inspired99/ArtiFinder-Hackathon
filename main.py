@@ -6,6 +6,7 @@ from api.arts_api import get_arts_info_helper, insert_image_helper
 from api.db import get_db_cursor, run_db_query
 from api.models import ArtModel, ArtQuery, FilePath
 from api.upload import upload_image_helper
+from ml_framework.ml_framework import MLFramework
 
 import logging
 
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 router = APIRouter()
-
+ml_framework = MLFramework()
 
 @router.get("/get_arts_info")
 async def get_arts_info():
@@ -50,8 +51,7 @@ async def gen_description(file_path: FilePath):
         raise HTTPException(status_code=404, detail="File not found")
 
     try:
-        # call ML function, can be await
-        description = "some text here"
+        description = ml_framework.get_img_description(file_path.path)
         return {"description": description}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
