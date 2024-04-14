@@ -1,11 +1,16 @@
 import os
 import uvicorn
 
-from fastapi import Depends, FastAPI, APIRouter, File, HTTPException, Query, UploadFile
+from fastapi import Request, FastAPI, APIRouter, File, HTTPException, Query, UploadFile
 from api.arts_api import get_arts_info_helper, insert_image_helper
 from api.db import get_db_cursor, run_db_query
 from api.models import ArtModel, ArtQuery, FilePath
 from api.upload import upload_image_helper
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter()
@@ -18,21 +23,24 @@ async def get_arts_info():
 
 @router.post("/get_arts_info", response_model=list)
 async def get_arts_info(query: ArtQuery, limit: int = Query(default=10, ge=1), offset: int = Query(default=0, ge=0)):
+    logger.info(f"Fetching arts info with query: {query.dict()}, limit: {limit}, offset: {offset}")
     try:
         with get_db_cursor() as cursor:
             result = await run_db_query(get_arts_info_helper, query, cursor, limit, offset)
         return result
     except Exception as e:
+        logger.error(f"Error in get_arts_info: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.post("/add_image", response_model=ArtModel)
 async def add_image(art: ArtModel):
+    logger.info(f"Adding new image with details: {art.dict()}")
     try:
         with get_db_cursor(commit=True) as cursor:
             result = await run_db_query(insert_image_helper, art, cursor)
         return result
     except Exception as e:
+        logger.error(f"Error in add_image: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -60,7 +68,16 @@ app = FastAPI(
     openapi_url="/api/openapi.json"
 )
 
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Request {request.method} {request.url}")
+    response = await call_next(request)
+    logger.info(f"Response status code: {response.status_code}")
+    return response
+
 app.include_router(router, prefix="/api")
+
 
 
 if __name__ == "__main__":
