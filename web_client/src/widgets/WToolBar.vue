@@ -11,7 +11,7 @@
                 <q-tooltip v-model="showingTooltip">Удалить</q-tooltip>
                 <img :src="imageSearchUrl">
             </q-avatar>
-            <q-chip v-if="categorySearchModel" removable v-on:remove="() => categorySearchModel = ''">
+            <q-chip v-if="categorySearchModel" removable v-on:remove="() => categorySearchModel = undefined">
                 {{ categorySearchModel }}
             </q-chip>
             <!-- </div> -->

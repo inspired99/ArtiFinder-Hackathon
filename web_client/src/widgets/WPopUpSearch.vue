@@ -8,7 +8,7 @@ import { useSerchArtObjectStore } from 'src/stores/SearchArtObjectStore';
 const $q = useQuasar();
 const isVisible = defineModel<boolean>({ default: false });
 const imageModel = defineModel<File>('imageModel');
-const selectedCategory = defineModel<string>('category', { default: '' });
+const selectedCategory = defineModel<string>('category');
 const { uploadImage } = useSerchArtObjectStore();
 
 const upload = async (value: unknown) => {
@@ -31,7 +31,7 @@ const upload = async (value: unknown) => {
 
 const reset = () => {
     imageModel.value = undefined;
-    selectedCategory.value = '';
+    selectedCategory.value = undefined;
 };
 
 // const isSendDisabled = computed(() => !imageModel.value || !selectedCategory.value);

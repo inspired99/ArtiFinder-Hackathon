@@ -13,6 +13,14 @@ export const useSerchArtObjectStore = defineStore('SerchArtObjectStore', () => {
     }>
   >({});
 
+  // watch(
+  //   () => searchItem.image,
+  //   () => {
+  //     console.log('image changed');
+      
+  //   }
+  // );
+
   const uploadImage = async () => {
     const formData = new FormData();
 
@@ -29,7 +37,7 @@ export const useSerchArtObjectStore = defineStore('SerchArtObjectStore', () => {
 
       const data = await response.json();
       searchItem.path = data.path;
-      searchItem.category = data.category;
+      // searchItem.category = data.category;
       return data;
     }
 

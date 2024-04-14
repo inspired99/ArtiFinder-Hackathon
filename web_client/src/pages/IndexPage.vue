@@ -44,6 +44,9 @@ const cb = debounce(() => resetScroll(), 800);
 
 searchArtStore.$subscribe(() => {
   cb();
+  if (!searchItem.image) {
+    searchItem.path = undefined;
+  }
 });
 
 function debounce(func: (...args: unknown[]) => void, delay: number) {
@@ -73,7 +76,7 @@ const $q = useQuasar();
 const currentArtItem = ref();
 const disable = ref(false);
 
-let limit = 9;
+let limit = 12;
 let offset = 0;
 
 const isVisible = ref(false);
