@@ -52,7 +52,7 @@ class ImagesDataset(Dataset):
 
 
 class Swin(LightningModule):
-	WEIGHTS_PATH = "swin.pt"
+	WEIGHTS_PATH = "ml_framework/swin/swin.pth"
 
 	TRAIN_TRANSFORM = T.Compose([
 		T.RandomHorizontalFlip(),
@@ -95,7 +95,7 @@ class Swin(LightningModule):
 				param.requires_grad = True
 
 			self.criterion = LabelSmoothingCrossEntropy()
-			self.calculate_accuracy = Accuracy(task="multiclass", num_classes=15)
+			self.calculate_accuracy = Accuracy(task="multiclass", num_classes=len(CATEGORY_TO_LABEL))
 
 			self.loss_outputs = {'train': [], 'val': []}
 			self.acc_outputs = {'train': [], 'val': []}
