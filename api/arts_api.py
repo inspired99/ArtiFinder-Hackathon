@@ -2,11 +2,14 @@ from api.db import get_db_cursor
 from api.models import ArtModel, ArtQuery
 
 
-def get_arts_info_helper(query: ArtQuery, cursor, limit=10, offset=0):
+def get_arts_info_helper(query: ArtQuery, cursor, limit=10, offset=0, ids=None):
     base_query = "SELECT * FROM images"
     conditions = []
     params = []
 
+    if ids:
+        conditions.append("ids IN %s")
+        params.append(tuple(ids))
     if query.title:
         conditions.append("title ILIKE %s")
         params.append(f"%{query.title}%")

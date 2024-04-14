@@ -28,10 +28,20 @@ async def get_arts_info():
 async def get_arts_info(query: ArtQuery, limit: int = Query(default=10, ge=1), offset: int = Query(default=0, ge=0)):
     logger.info(f"Fetching arts info with query: {query.dict()}, limit: {limit}, offset: {offset}")
     try:
+        if not query.path:
+            with get_db_cursor() as cursor:
+                result = await run_db_query(get_arts_info_helper, query, cursor, limit, offset)
+                logger.info(f"....Sent {len(result)} objects....")
+            return result
+
+        img_path = query.path
+        emb = ml_framework.get_img_embedding(img_path)
+        img_ids = embeddings_database.find_similar(emb, k=30)
         with get_db_cursor() as cursor:
-            result = await run_db_query(get_arts_info_helper, query, cursor, limit, offset)
+            result = await run_db_query(get_arts_info_helper, query, cursor, limit, offset, img_ids)
             logger.info(f"....Sent {len(result)} objects....")
         return result
+
     except Exception as e:
         logger.error(f"Error in get_arts_info: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))

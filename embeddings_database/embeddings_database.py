@@ -18,7 +18,7 @@ class EmbeddingsDatabase:
 
 	def find_similar(self, query_emb, k: int):
 		_, indices = self.index_idmap.search(query_emb, k)
-		return indices
+		return indices[0].tolist()
 
 	def save_database(self):
 		faiss.write_index(self.index_idmap, self.EMBEDDINGS_DATABASE_PATH)
