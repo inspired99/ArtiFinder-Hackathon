@@ -8,14 +8,11 @@ def get_arts_info_helper(query: ArtQuery, cursor, limit=10, offset=0, ids=None):
     params = []
 
     if ids:
-        conditions.append("ids IN %s")
+        conditions.append("id IN %s")
         params.append(tuple(ids))
     if query.title:
         conditions.append("title ILIKE %s")
         params.append(f"%{query.title}%")
-    if query.path:
-        conditions.append("path = %s")
-        params.append(query.path)
     if query.category:
         conditions.append("category = %s")
         params.append(query.category)
