@@ -30,9 +30,13 @@ def get_arts_info_helper(query: ArtQuery, cursor, limit=10, offset=0):
     return result
 
 
-def insert_image_helper(art: ArtModel, cursor) -> ArtModel:
+def insert_image_helper(art: ArtModel, cursor):
     cursor.execute(
         "INSERT INTO images (title, path, category, description) VALUES (%s, %s, %s, %s)",
         (art.title, art.path, art.category, art.description)
     )
-    return art
+
+    # art_id = cursor.lastrowid
+    art_id = cursor.fetchone()[0]
+
+    return art_id, art

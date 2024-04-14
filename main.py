@@ -41,7 +41,13 @@ async def add_image(art: ArtModel):
     logger.info(f"Adding new image with details: {art.dict()}")
     try:
         with get_db_cursor(commit=True) as cursor:
-            result = await run_db_query(insert_image_helper, art, cursor)
+            art_id, result = await run_db_query(insert_image_helper, art, cursor)
+
+        path = result.path
+        emb = ml_framework.get_img_embedding(path)
+        print(path, emb.shape, art_id)
+        # embeddings_database.add_embedding(emb, art_id)
+
         return result
     except Exception as e:
         logger.error(f"Error in add_image: {str(e)}")
