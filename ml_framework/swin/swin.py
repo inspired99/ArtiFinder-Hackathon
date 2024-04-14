@@ -1,4 +1,5 @@
 import os
+from tqdm import tqdm
 import torch
 import pandas as pd
 from PIL import Image
@@ -209,6 +210,21 @@ def train_classification_model(dataset_path):
 	model.save_weights(Swin.WEIGHTS_PATH)
 
 
+def predict_classification_model(dataset_path):
+	model = Swin(is_train=False)
+
+	dataset_img_path = dataset_path + '/' + 'test'
+
+	submit = pd.read_csv(dataset_path + '/' + 'subm_test.csv', sep=';')
+
+	for index, row in tqdm(submit.iterrows()):
+		img_path = dataset_img_path + '/' + str(row['object_id']) + '/' + row['img_name']
+		submit.at[index, 'group'] = model.get_img_class(img_path)
+
+	submit.to_csv('subm_test.csv', sep=';', encoding='utf-8', index=False)
+
+
 if __name__ == "__main__":
 	DATASET_PATH = '/kaggle/input/hackcp'
 	train_classification_model(DATASET_PATH)
+	predict_classification_model('/kaggle/input/hack-test')
