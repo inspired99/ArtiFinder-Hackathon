@@ -11,6 +11,13 @@ const isVisible = defineModel<boolean>({ default: false });
 const imageModel = defineModel<File>('imageModel');
 const description = defineModel<string>('description', { default: '' });
 const selectedCategory = defineModel<string>('category', { default: '' });
+const isSendDisabled = computed(() => !imageModel.value || !description.value || !selectedCategory.value || !addItem.title);
+
+const showLoading = () => $q.loading.show({
+    message: 'Подождите, идет загрузка...'
+});
+
+const hideLoading = () => $q.loading.hide();
 
 const { uploadImage, createItem, addItem } = useAddArtObjectStore();
 
@@ -21,13 +28,13 @@ const upload = async (value: unknown) => {
         $q.notify({
             message: 'Изображение загружено',
             color: 'positive',
-            position: 'bottom',
+            position: 'top',
         });
     } catch (error) {
         $q.notify({
             message: 'Ошибка загрузки изображения',
             color: 'negative',
-            position: 'bottom',
+            position: 'top',
         });
     }
 };
@@ -38,7 +45,7 @@ const CreateItem = async () => {
         $q.notify({
             message: 'Объект добавлен',
             color: 'positive',
-            position: 'bottom',
+            position: 'top',
         });
         reset();
         isVisible.value = false;
@@ -46,7 +53,7 @@ const CreateItem = async () => {
         $q.notify({
             message: 'Ошибка добавления объекта',
             color: 'negative',
-            position: 'bottom',
+            position: 'top',
         });
     }
 };
@@ -58,7 +65,40 @@ const reset = () => {
     addItem.title = '';
 };
 
-const isSendDisabled = computed(() => !imageModel.value || !description.value || !selectedCategory.value || !addItem.title);
+const genetateDescription = () => {
+    if (!imageModel.value && !addItem.path) {
+        $q.notify({
+            message: 'Загрузите изображение',
+            color: 'warning',
+            position: 'top',
+        });
+        return;
+    }
+    showLoading();
+    fetch('/api/gen_description', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            path: addItem.path,
+        }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            description.value = data.description;
+        })
+        .catch(() => {
+            $q.notify({
+                message: 'Ошибка генерации описания',
+                color: 'negative',
+                position: 'top',
+            });
+        }).finally(() => {
+            // reset();
+            hideLoading();
+        });
+};
 
 defineEmits<{
     (e: 'submit'): void;
@@ -94,7 +134,7 @@ defineProps({
                 <div class="column tw-pb-4">
                     <q-input outlined v-model="description" label="Описание" type="textarea" />
                 </div>
-                <q-btn class="tw-mt-8" label="Сгенерировать" color="primary" @click="$emit('submit')" />
+                <q-btn class="tw-mt-8" label="Сгенерировать" color="primary" @click="genetateDescription" />
             </div>
         </template>
         <template v-slot:footer>

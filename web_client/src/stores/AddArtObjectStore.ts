@@ -29,6 +29,7 @@ export const useAddArtObjectStore = defineStore('AddArtObjectStore', () => {
 
       const data = await response.json();
       addItem.path = data.path;
+      addItem.category = data.category;
       addItem.description = 'Загружено. Введите описание...';
       return data;
     }

@@ -3,7 +3,7 @@
         class="tw-container tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4"
         @load="(index, done) => $emit('loadMore', index, done)">
         <template v-slot:loading>
-            <div class="tw-absolute tw-bottom-0 tw-w-full tw-items-center tw-justify-center tw-flex">
+            <div class="tw-absolute tw-container tw-bottom-8 tw-items-center tw-justify-center tw-flex">
                 <q-spinner-ios size="80px" />
             </div>
         </template>

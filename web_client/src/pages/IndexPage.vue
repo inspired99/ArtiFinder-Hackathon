@@ -9,11 +9,14 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { provide, ref } from 'vue';
+import { ref } from 'vue';
 import { useSerchArtObjectStore } from 'src/stores/SearchArtObjectStore';
 import CInfiniteScroll from 'src/components/CInfiniteScroll.vue';
 import { ArtItemT } from 'src/entities/ArtItem';
 import WPhotoDetails from 'src/widgets/WPhotoDetails.vue';
+
+// console.log the version of Frontend
+console.log('Frontend version: 0.0.1');
 
 type ItemBackend = {
   id: number;
@@ -34,13 +37,24 @@ const mapBackendItem = (item: ItemBackend): ArtItemT => ({
 const searchArtStore = useSerchArtObjectStore();
 const searchItem = searchArtStore.searchItem;
 
-searchArtStore.$subscribe((_mutation: unknown, state: unknown) => {
-  debounce(resetScroll, 500)();
+const notFound = () => $q.notify({
+  message: 'Нет больше объектов с такими параметрами',
+  color: 'negative',
+  position: 'top',
 });
 
-function debounce(func: any, delay: any) {
+const cb = debounce(() => resetScroll(), 800);
+
+searchArtStore.$subscribe(() => {
+  cb();
+  if (!searchItem.image) {
+    searchItem.path = undefined;
+  }
+});
+
+function debounce(func: (...args: unknown[]) => void, delay: number) {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return function (...args: any[]) {
+  return function (...args: unknown[]) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       func(...args);
@@ -53,6 +67,10 @@ const resetScroll = () => {
   offset = 0;
   items.value = [];
   loadContent().then((data) => {
+    if (!data.length) {
+      notFound();
+      return;
+    }
     items.value = data.map(mapBackendItem);
   }).catch(console.error);
 };
@@ -61,15 +79,8 @@ const $q = useQuasar();
 const currentArtItem = ref();
 const disable = ref(false);
 
-let limit = 10;
+let limit = 12;
 let offset = 0;
-
-provide('loading', {
-  show: () => $q.loading.show({
-    message: 'Подождите, идет загрузка...'
-  }),
-  hide: () => $q.loading.hide()
-});
 
 const isVisible = ref(false);
 
@@ -89,6 +100,15 @@ const loadContent = async () => {
           category: searchItem?.category,
         }),
       });
+
+    if (!response.ok) {
+      $q.notify({
+        message: 'Ошибка загрузки объектов',
+        color: 'negative',
+        position: 'top',
+      });
+    }
+
     const data = await response.json();
     // items.value = items.value.concat(data.map(mapBackendItem));
     offset += limit;
@@ -101,13 +121,10 @@ const loadContent = async () => {
 const loadMore = (page: number, done: () => void) => {
   // disable.value = true;
   loadContent().then((data) => {
+    console.log(data.length);
     if (!data.length) {
       disable.value = true;
-      $q.notify({
-        message: 'Нет больше объектов с такими параметрами',
-        color: 'negative',
-        position: 'bottom',
-      });
+      notFound();
       done();
       return;
     }
