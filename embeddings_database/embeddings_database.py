@@ -1,12 +1,9 @@
 import faiss
-import asyncio
-from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 
 
 class EmbeddingsDatabase:
-	def __init__(self, executor: ProcessPoolExecutor, emb_size: int):
-		self.executor = executor
+	def __init__(self, emb_size: int):
 		self.index = faiss.IndexFlatL2(emb_size)
 
 	def add_embedding(self, new_emb):
