@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { provide, ref } from 'vue';
+import { ref } from 'vue';
 import { useSerchArtObjectStore } from 'src/stores/SearchArtObjectStore';
 import CInfiniteScroll from 'src/components/CInfiniteScroll.vue';
 import { ArtItemT } from 'src/entities/ArtItem';
@@ -34,6 +34,12 @@ const mapBackendItem = (item: ItemBackend): ArtItemT => ({
 const searchArtStore = useSerchArtObjectStore();
 const searchItem = searchArtStore.searchItem;
 
+const notFound = () => $q.notify({
+  message: 'Нет больше объектов с такими параметрами',
+  color: 'negative',
+  position: 'top',
+});
+
 const cb = debounce(() => resetScroll(), 800);
 
 searchArtStore.$subscribe(() => {
@@ -55,6 +61,10 @@ const resetScroll = () => {
   offset = 0;
   items.value = [];
   loadContent().then((data) => {
+    if (!data.length) {
+      notFound();
+      return;
+    }
     items.value = data.map(mapBackendItem);
   }).catch(console.error);
 };
@@ -63,15 +73,8 @@ const $q = useQuasar();
 const currentArtItem = ref();
 const disable = ref(false);
 
-let limit = 10;
+let limit = 9;
 let offset = 0;
-
-provide('loading', {
-  show: () => $q.loading.show({
-    message: 'Подождите, идет загрузка...'
-  }),
-  hide: () => $q.loading.hide()
-});
 
 const isVisible = ref(false);
 
@@ -112,13 +115,10 @@ const loadContent = async () => {
 const loadMore = (page: number, done: () => void) => {
   // disable.value = true;
   loadContent().then((data) => {
+    console.log(data.length);
     if (!data.length) {
       disable.value = true;
-      $q.notify({
-        message: 'Нет больше объектов с такими параметрами',
-        color: 'negative',
-        position: 'top',
-      });
+      notFound();
       done();
       return;
     }
