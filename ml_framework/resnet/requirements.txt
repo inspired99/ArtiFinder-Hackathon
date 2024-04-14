@@ -1,4 +1,5 @@
 torch
+timm
 pandas
 torchvision
 pytorch_lightning

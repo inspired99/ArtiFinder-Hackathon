@@ -2,14 +2,14 @@ import os
 import torch
 import pandas as pd
 from PIL import Image
-import torch.nn as nn
-from torchvision import transforms
-from torchvision.models import resnet101
+from torch import nn
+from torchvision import transforms as T
 from pytorch_lightning import LightningModule, Trainer
-from pytorch_lightning.callbacks import EarlyStopping
 from torch.utils.data import DataLoader, Dataset
 from sklearn.model_selection import train_test_split
 from torchmetrics import Accuracy
+import timm
+from timm.loss import LabelSmoothingCrossEntropy
 
 
 CATEGORY_TO_LABEL = {
@@ -51,38 +51,50 @@ class ImagesDataset(Dataset):
 		return transformed_img, label
 
 
-class ResNet(LightningModule):
-	WEIGHTS_PATH = "resnet.pt"
+class Swin(LightningModule):
+	WEIGHTS_PATH = "swin.pt"
 
-	TRAIN_TRANSFORM = transforms.Compose([
-		transforms.Resize(256),
-		transforms.RandomCrop(224),
-		transforms.RandomHorizontalFlip(p=0.5),
-		transforms.ToTensor(),
-		transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+	TRAIN_TRANSFORM = T.Compose([
+		T.RandomHorizontalFlip(),
+		T.RandomVerticalFlip(),
+		T.RandomApply(torch.nn.ModuleList([T.ColorJitter()]), p=0.25),
+		T.Resize(256),
+		T.CenterCrop(224),
+		T.ToTensor(),
+		T.Normalize(timm.data.IMAGENET_DEFAULT_MEAN, timm.data.IMAGENET_DEFAULT_STD),
+		T.RandomErasing(p=0.1, value='random')
 	])
 
-	INFERENCE_TRANSFORM = transforms.Compose([
-		transforms.Resize(256),
-		transforms.CenterCrop(224),
-		transforms.ToTensor(),
-		transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+	INFERENCE_TRANSFORM = T.Compose([
+		T.Resize(256),
+		T.CenterCrop(224),
+		T.ToTensor(),
+		T.Normalize(timm.data.IMAGENET_DEFAULT_MEAN, timm.data.IMAGENET_DEFAULT_STD),
 	])
 
 	def __init__(self, is_train):
 		super().__init__()
 
-		self.model = resnet101(pretrained=is_train)
-		self.model.fc = nn.Linear(2048, 15)
+		hub_url = "SharanSMenon/swin-transformer-hub:main"
+		model_name = "swin_tiny_patch4_window7_224"
+		self.model = torch.hub.load(hub_url, model_name, pretrained=is_train)
+
+		n_inputs = self.model.head.in_features
+		self.model.head = nn.Sequential(
+			nn.Linear(n_inputs, 512),
+			nn.ReLU(),
+			nn.Dropout(0.3),
+			nn.Linear(512, len(CATEGORY_TO_LABEL))
+		)
 
 		if is_train:
 			for param in self.model.parameters():
 				param.requires_grad = False
 
-			for param in self.model.fc.parameters():
+			for param in self.model.head.parameters():
 				param.requires_grad = True
 
-			self.loss = nn.CrossEntropyLoss()
+			self.criterion = LabelSmoothingCrossEntropy()
 			self.calculate_accuracy = Accuracy(task="multiclass", num_classes=15)
 
 			self.loss_outputs = {'train': [], 'val': []}
@@ -91,18 +103,25 @@ class ResNet(LightningModule):
 		else:
 			self.gpu_device = torch.device("cuda")
 
-			# self.model.load_state_dict(torch.load(self.WEIGHTS_PATH, map_location=self.gpu_device))
+			self.model.load_state_dict(torch.load(self.WEIGHTS_PATH, map_location=self.gpu_device))
 			self.model.eval()
 			self.model.to(self.gpu_device)
 
 	def configure_optimizers(self):
-		optimizer = torch.optim.Adam(self.parameters(), lr=1e-4, weight_decay=1e-6)
-		return optimizer
+		optimizer = torch.optim.AdamW(self.model.parameters(), lr=0.001, weight_decay=1e-4)
+		lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.99)
+
+		lr_dict = {
+			"scheduler": lr_scheduler,
+			"monitor": "loss"
+		}
+
+		return [optimizer], [lr_dict]
 
 	def step(self, batch, mode):
 		x, y = batch
 		logits = self.model.forward(x)
-		loss = self.loss(logits, y)
+		loss = self.criterion(logits, y)
 
 		# Show loss on step
 		self.log("loss", loss, on_step=True, on_epoch=True, prog_bar=True)
@@ -167,34 +186,27 @@ def train_classification_model(dataset_path):
 	)
 
 	# Create datasets
-	train_dataset = ImagesDataset(train_img_names, train_img_group, ResNet.TRAIN_TRANSFORM)
-	val_dataset = ImagesDataset(val_img_names, val_img_group, ResNet.INFERENCE_TRANSFORM)
+	train_dataset = ImagesDataset(train_img_names, train_img_group, Swin.TRAIN_TRANSFORM)
+	val_dataset = ImagesDataset(val_img_names, val_img_group, Swin.INFERENCE_TRANSFORM)
 
 	# Create dataloaders
-	train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=2)
-	val_dataloader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=2)
+	train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
+	val_dataloader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
 
 	# Create model
-	model = ResNet(is_train=True)
-
-	early_stopping_callback = EarlyStopping(
-		monitor='acc',
-		patience=3,
-		mode='max'
-	)
+	model = Swin(is_train=True)
 
 	# Create trainer
 	trainer = Trainer(
-		max_epochs=10,
-		accelerator="gpu",
-		callbacks=[early_stopping_callback]
+		max_epochs=2,
+		accelerator="gpu"
 	)
 
 	# Train
 	trainer.fit(model, train_dataloader, val_dataloader)
 
 	# Save weights
-	model.save_weights(ResNet.WEIGHTS_PATH)
+	model.save_weights(Swin.WEIGHTS_PATH)
 
 
 if __name__ == "__main__":

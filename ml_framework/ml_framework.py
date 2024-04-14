@@ -1,19 +1,23 @@
 from ml_framework.clip.clip import CLIP
-from ml_framework.resnet.resnet import ResNet
+from ml_framework.resnet.resnet import Swin
 from ml_framework.llava.llava import Llava
+
+# Remove warnings
+import warnings
+warnings.filterwarnings("ignore")
 
 
 class MLFramework:
 	def __init__(self):
 		self.clip = CLIP()
-		self.resnet = ResNet(is_train=False)
+		self.swin = Swin(is_train=False)
 		self.llava = Llava()
 
 	def get_img_embedding(self, img_path: str):
 		return self.clip.get_img_embedding(img_path)
 
 	def get_img_class(self, img_path: str):
-		return self.resnet.get_img_class(img_path)
+		return self.swin.get_img_class(img_path)
 
 	def get_img_description(self, img_path: str):
 		return self.llava.caption_image(img_path)
