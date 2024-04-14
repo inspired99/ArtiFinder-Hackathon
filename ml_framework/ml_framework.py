@@ -1,5 +1,5 @@
 from ml_framework.clip.clip import CLIP
-from ml_framework.resnet.resnet import Swin
+from ml_framework.swin.swin import Swin
 from ml_framework.llava.llava import Llava
 
 # Remove warnings
