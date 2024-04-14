@@ -62,7 +62,14 @@ async def gen_description(file_path: FilePath):
 
 @router.post("/upload")
 async def upload_image(file: UploadFile = File(...)):
-    return await upload_image_helper(file)
+    try:
+        result = await upload_image_helper(file)
+        path = result["path"]
+        if path:
+            result["category"] = ml_framework.get_img_class(path)
+            return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 app = FastAPI(
