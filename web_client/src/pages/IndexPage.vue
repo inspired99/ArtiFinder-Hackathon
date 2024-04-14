@@ -15,6 +15,9 @@ import CInfiniteScroll from 'src/components/CInfiniteScroll.vue';
 import { ArtItemT } from 'src/entities/ArtItem';
 import WPhotoDetails from 'src/widgets/WPhotoDetails.vue';
 
+// console.log the version of Frontend
+console.log('Frontend version: 0.0.1');
+
 type ItemBackend = {
   id: number;
   title: string;
