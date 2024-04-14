@@ -1,0 +1,8 @@
+torch
+timm
+pandas
+torchvision
+pytorch_lightning
+scikit-learn
+torchmetrics
+pillow

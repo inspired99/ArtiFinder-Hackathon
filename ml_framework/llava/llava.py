@@ -19,10 +19,12 @@ class Llava:
     def __init__(self) -> None:
         self.model_path = "4bit/llava-v1.5-13b-3GB"
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.__load_model__()
+
         self.model = None
         self.tokenizer = None
         self.image_processor = None
+
+        self.__load_model__()
 
     def __load_model__(self) -> None:
         """
@@ -36,7 +38,6 @@ class Llava:
                       bnb_4bit_use_double_quant=True,
                       bnb_4bit_quant_type='nf4'
                   )}
-        print('here')
         self.model = LlavaLlamaForCausalLM.from_pretrained(self.model_path, low_cpu_mem_usage=True, **kwargs)
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_path, use_fast=False)
 
