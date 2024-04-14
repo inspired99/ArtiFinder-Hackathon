@@ -170,7 +170,7 @@ class Swin(LightningModule):
 
 		y_preds = torch.argmax(logits, dim=1)[0]
 
-		return y_preds.item()
+		return LABEL_TO_CATEGORY[y_preds.item()]
 
 
 def train_classification_model(dataset_path):
