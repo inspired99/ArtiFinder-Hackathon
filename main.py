@@ -1,7 +1,7 @@
 import os
 import uvicorn
 
-from fastapi import Depends, FastAPI, APIRouter, File, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, APIRouter, File, HTTPException, Query, UploadFile
 from api.arts_api import get_arts_info_helper, insert_image_helper
 from api.db import get_db_cursor, run_db_query
 from api.models import ArtModel, ArtQuery, FilePath
@@ -17,10 +17,10 @@ async def get_arts_info():
 
 
 @router.post("/get_arts_info", response_model=list)
-async def get_arts_info(art: ArtQuery):
+async def get_arts_info(query: ArtQuery, limit: int = Query(default=10, ge=1), offset: int = Query(default=0, ge=0)):
     try:
         with get_db_cursor() as cursor:
-            result = await run_db_query(get_arts_info_helper, art, cursor)
+            result = await run_db_query(get_arts_info_helper, query, cursor, limit, offset)
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -29,7 +29,7 @@ async def get_arts_info(art: ArtQuery):
 @router.post("/add_image", response_model=ArtModel)
 async def add_image(art: ArtModel):
     try:
-        with get_db_cursor() as cursor:
+        with get_db_cursor(commit=True) as cursor:
             result = await run_db_query(insert_image_helper, art, cursor)
         return result
     except Exception as e:
