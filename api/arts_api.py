@@ -8,7 +8,7 @@ def get_arts_info_helper(query: ArtQuery, cursor, limit=10, offset=0):
     params = []
 
     if query.title:
-        conditions.append("title LIKE %s")
+        conditions.append("title ILIKE %s")
         params.append(f"%{query.title}%")
     if query.path:
         conditions.append("path = %s")
