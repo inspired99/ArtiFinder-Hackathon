@@ -7,6 +7,7 @@ from api.db import get_db_cursor, run_db_query
 from api.models import ArtModel, ArtQuery, FilePath
 from api.upload import upload_image_helper
 from ml_framework.ml_framework import MLFramework
+from embeddings_database.embeddings_database import EmbeddingsDatabase
 
 import logging
 
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 ml_framework = MLFramework()
+embeddings_database = EmbeddingsDatabase(ml_framework.get_emb_size())
 
 @router.get("/get_arts_info")
 async def get_arts_info():

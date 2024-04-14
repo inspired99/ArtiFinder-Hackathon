@@ -5,10 +5,11 @@ import numpy as np
 class EmbeddingsDatabase:
 	def __init__(self, emb_size: int):
 		self.index = faiss.IndexFlatL2(emb_size)
+		self.index_idmap = faiss.IndexIDMap(self.index)
 
-	def add_embedding(self, new_emb):
-		self.index.add(1, new_emb)
-		self.index.add_with_ids()
+	def add_embedding(self, img_emb, img_ind):
+		self.index_idmap.add_with_ids(img_emb, img_ind)
 
 	def find_similar(self, query_emb, k: int):
-		distances, indices = self.index.search(query_emb, k)
+		_, indices = self.index_idmap.search(query_emb, k)
+		return indices
