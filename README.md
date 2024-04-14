@@ -72,6 +72,22 @@ gpasswd -a www-data username
 sudo ln -s /path/to/images /var/www/imgs
 ```
 
+## Развертывание серверной части
+
+1. Перейдите в каталог `/path/to/ArtiFinder/`
+```bash
+cd /path/to/ArtiFinder/
+```
+2. Установите зависимости из файла `requirements.txt`, выполнив следующую команду:
+```bash
+pip install -r requirements.txt
+```
+3. Запустите сервер, выполнив команду:
+```bash
+python3 main.py
+```
+4. Убедитесь, что сервер работает корректно и отвечает на запросы. Откройте веб-браузер. Введите адрес `http://localhost:8000/api/docs`
+
 # ML модели
 
 * Для классификации изображений используется предобученный визуальный трансформер Swin - `swin_tiny_patch4_window7_224`. Для повышения точности модель была дообучена на тренировочных изображениях с применением аугментаций. Веса модели доступны по [ссылке](https://drive.google.com/file/d/1nm1xIbH08QyWKBAJsmDHK-9m8LWYCXkJ/view?usp=sharing).
