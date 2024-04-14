@@ -22,9 +22,9 @@ defineProps({
 
                     <q-card-section>
                         <div class="text-h5 q-mt-sm q-mb-xs">{{ artItem.title }}</div>
-                        <div class="text-caption text-grey">
+                        <div class="text-caption text-black">
                             {{ artItem.description }}
-                            <q-badge rounded class="tw-mx-0.5" color="secondary" :label="artItem.tag" />
+                            <q-badge rounded class="tw-mx-0.5" color="primary" :label="artItem.tag" />
                         </div>
                     </q-card-section>
 
