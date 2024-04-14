@@ -21,13 +21,13 @@ const upload = async (value: unknown) => {
         $q.notify({
             message: 'Изображение загружено',
             color: 'positive',
-            position: 'bottom',
+            position: 'top',
         });
     } catch (error) {
         $q.notify({
             message: 'Ошибка загрузки изображения',
             color: 'negative',
-            position: 'bottom',
+            position: 'top',
         });
     }
 };
@@ -38,7 +38,7 @@ const CreateItem = async () => {
         $q.notify({
             message: 'Объект добавлен',
             color: 'positive',
-            position: 'bottom',
+            position: 'top',
         });
         reset();
         isVisible.value = false;
@@ -46,7 +46,7 @@ const CreateItem = async () => {
         $q.notify({
             message: 'Ошибка добавления объекта',
             color: 'negative',
-            position: 'bottom',
+            position: 'top',
         });
     }
 };

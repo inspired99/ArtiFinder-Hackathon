@@ -34,13 +34,15 @@ const mapBackendItem = (item: ItemBackend): ArtItemT => ({
 const searchArtStore = useSerchArtObjectStore();
 const searchItem = searchArtStore.searchItem;
 
-searchArtStore.$subscribe((_mutation: unknown, state: unknown) => {
-  debounce(resetScroll, 500)();
+const cb = debounce(() => resetScroll(), 800);
+
+searchArtStore.$subscribe(() => {
+  cb();
 });
 
-function debounce(func: any, delay: any) {
+function debounce(func: (...args: unknown[]) => void, delay: number) {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return function (...args: any[]) {
+  return function (...args: unknown[]) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       func(...args);
@@ -89,6 +91,15 @@ const loadContent = async () => {
           category: searchItem?.category,
         }),
       });
+
+    if (!response.ok) {
+      $q.notify({
+        message: 'Ошибка загрузки объектов',
+        color: 'negative',
+        position: 'top',
+      });
+    }
+
     const data = await response.json();
     // items.value = items.value.concat(data.map(mapBackendItem));
     offset += limit;
@@ -106,7 +117,7 @@ const loadMore = (page: number, done: () => void) => {
       $q.notify({
         message: 'Нет больше объектов с такими параметрами',
         color: 'negative',
-        position: 'bottom',
+        position: 'top',
       });
       done();
       return;

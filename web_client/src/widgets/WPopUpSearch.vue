@@ -18,13 +18,13 @@ const upload = async (value: unknown) => {
         $q.notify({
             message: 'Изображение загружено',
             color: 'positive',
-            position: 'bottom',
+            position: 'top',
         });
     } catch (error) {
         $q.notify({
             message: 'Ошибка загрузки изображения',
             color: 'negative',
-            position: 'bottom',
+            position: 'top',
         });
     }
 }

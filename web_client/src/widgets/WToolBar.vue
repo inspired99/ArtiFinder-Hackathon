@@ -7,7 +7,8 @@
                     <q-icon v-else name="clear" class="cursor-pointer" @click="titleSearchModel = ''" />
                 </template>
             </q-input>
-            <q-avatar class="overlapping" v-if="imageSearchUrl">
+            <q-avatar class="overlapping cursor-pointer" v-if="imageSearchUrl" @click="imageSearchModel = undefined">
+                <q-tooltip v-model="showingTooltip">Удалить</q-tooltip>
                 <img :src="imageSearchUrl">
             </q-avatar>
             <q-chip v-if="categorySearchModel" removable v-on:remove="() => categorySearchModel = ''">
@@ -60,6 +61,7 @@ const imageSearchUrl = computed(() =>
     imageSearchModel.value ? URL.createObjectURL(imageSearchModel.value) : '',
 );
 
+const showingTooltip = ref(false);
 
 defineProps({
     categoryOptions: { type: Array as PropType<string[]>, required: true },

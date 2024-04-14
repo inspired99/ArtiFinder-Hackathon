@@ -1,8 +1,8 @@
 {
   "name": "hack-2024-april",
   "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "Quasar App",
+  "description": "Поиск музейных предметов",
+  "productName": "Artifinder",
   "author": "Ilya Ivantsov <iivantsov11@gmail.com>",
   "private": true,
   "scripts": {

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { QFile } from 'quasar';
+import { QFile, useQuasar } from 'quasar';
 
+const $q = useQuasar();
 const quasarFilePickerRef = ref<InstanceType<typeof QFile> | null>(null);
 
 const imageModel = defineModel<File>('imageModel');
@@ -12,10 +13,18 @@ const imageURL = computed(() =>
 
 const onDrop = (e: DragEvent) => {
     e.preventDefault();
-    const file = e.dataTransfer!.files[0];
+    const file = e.dataTransfer?.files[0];
     if (file) {
         imageModel.value = file;
     }
+};
+
+const reject = () => {
+    $q.notify({
+        message: 'Ошибка загрузки изображения',
+        color: 'negative',
+        position: 'top',
+    });
 };
 
 </script>
@@ -49,7 +58,8 @@ const onDrop = (e: DragEvent) => {
             <p class="tw-mt-5 sub-4-medium tw-text-neutral-600">
                 Перетащите свое изображение сюда или нажмите на кнопку
             </p>
-            <q-file style="display: none" ref="quasarFilePickerRef" v-model="imageModel" accept=".jpg, .png, .jpeg" />
+            <q-file style="display: none" ref="quasarFilePickerRef" max-file-size="5242880" v-model="imageModel"
+                accept=".jpg, .png, .jpeg" @rejected="reject" />
             <q-btn v-if="imageModel === undefined" label="Upload file" @click="quasarFilePickerRef!.pickFiles()"
                 icon="cloud_upload" />
             <div v-else class="row justify-center items-center">
