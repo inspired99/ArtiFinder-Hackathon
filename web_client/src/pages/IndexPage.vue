@@ -1,29 +1,68 @@
 <template>
   <q-page class="column" style="width: 100%">
-    <CInfiniteScroll :items="items" @card-click="(item) => { isVisible = true; currentArtItem = item }"
-      @load-more="loadMore" class="tw-m-auto tw-pt-4" />
+    <CInfiniteScroll v-model:disable="disable" :items="items"
+      @card-click="(item) => { isVisible = true; currentArtItem = item }" @load-more="loadMore"
+      class="tw-m-auto tw-pt-4" />
   </q-page>
   <WPhotoDetails :artItem="currentArtItem" v-model="isVisible" />
 </template>
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
+import { provide, ref } from 'vue';
+import { useSerchArtObjectStore } from 'src/stores/SearchArtObjectStore';
 import CInfiniteScroll from 'src/components/CInfiniteScroll.vue';
 import { ArtItemT } from 'src/entities/ArtItem';
 import WPhotoDetails from 'src/widgets/WPhotoDetails.vue';
-import { provide, ref } from 'vue';
 
-// $q.notify.registerType('my-notif', {
-//       icon: 'announcement',
-//       progress: true,
-//       color: 'brown',
-//       textColor: 'white',
-//       classes: 'glossy'
-//     })
+type ItemBackend = {
+  id: number;
+  title: string;
+  description: string;
+  path: string;
+  category: string;
+};
 
+const mapBackendItem = (item: ItemBackend): ArtItemT => ({
+  id: item.id,
+  title: item.title,
+  description: item.description,
+  imageUrl: item.path.replace('/home/ubuntu', 'https://cathackers.xyz'), // TODO: fix this
+  tag: item.category,
+});
+
+const searchArtStore = useSerchArtObjectStore();
+const searchItem = searchArtStore.searchItem;
+
+searchArtStore.$subscribe((_mutation: unknown, state: unknown) => {
+  debounce(resetScroll, 500)();
+});
+
+function debounce(func: any, delay: any) {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return function (...args: any[]) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
+
+const resetScroll = () => {
+  disable.value = false;
+  offset = 0;
+  items.value = [];
+  loadContent().then((data) => {
+    items.value = data.map(mapBackendItem);
+  }).catch(console.error);
+};
 
 const $q = useQuasar();
 const currentArtItem = ref();
+const disable = ref(false);
+
+let limit = 10;
+let offset = 0;
 
 provide('loading', {
   show: () => $q.loading.show({
@@ -34,84 +73,51 @@ provide('loading', {
 
 const isVisible = ref(false);
 
-const items = ref<ArtItemT[]>(
-  [
-    {
-      id: 1,
-      title: 'Книга. «К.Э. Циолковский известный и неизвестный»/ сост. А.Л. Голованов, Е.А. Тимошенкова. - М.: «ГЕЛИОС», 2023.',
-      description: 'Книга в мягкой обложке. Рассказывает о жизненном пути великого человека, основоположника теоретической космонавтики Константина Эдуардовича Циолковского.',
-      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63103841?originalName=3659866.jpg',
-      tag: 'Книги'
-    },
-    {
-      id: 2,
-      title: 'Брошюра. Как собирать горные породы и минералы. 45 стр.',
-      description: 'Местонахождение: Муниципальное бюджетное учреждение культуры "Краснотурьинский краеведческий музей',
-      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63099146?originalName=3826657.jpg',
-      tag: 'Книги'
-    },
-    {
-      id: 3,
-      title: `Шмагин Вячеслав Николаевич "Скорбящий ангел"`,
-      description: `Местонахождение
-Федеральное государственное бюджетное учреждение культуры "Государственный центральный музей современной истории России"`,
-      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63096049?originalName=46116_3.jpg',
-      tag: 'Живопись'
-    },
-    {
-      id: 4,
-      title: 'Книга. «К.Э. Циолковский известный и неизвестный»/ сост. А.Л. Голованов, Е.А. Тимошенкова. - М.: «ГЕЛИОС», 2023.',
-      description: 'Книга в мягкой обложке. Рассказывает о жизненном пути великого человека, основоположника теоретической космонавтики Константина Эдуардовича Циолковского.',
-      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63103841?originalName=3659866.jpg',
-      tag: 'Книги'
-    },
-    {
-      id: 5,
-      title: 'Брошюра. Как собирать горные породы и минералы. 45 стр.',
-      description: 'Местонахождение: Муниципальное бюджетное учреждение культуры "Краснотурьинский краеведческий музей',
-      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63099146?originalName=3826657.jpg',
-      tag: 'Книги'
-    },
-    {
-      id: 6,
-      title: `Шмагин Вячеслав Николаевич "Скорбящий ангел"`,
-      description: `Местонахождение
-Федеральное государственное бюджетное учреждение культуры "Государственный центральный музей современной истории России"`,
-      imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63096049?originalName=46116_3.jpg',
-      tag: 'Живопись'
-    },
-  ]
-);
+const items = ref<ArtItemT[]>([]);
 
-const loadMore = (index: number, done: () => void) => {
-  setTimeout(() => {
-    items.value.push(
+const loadContent = async () => {
+  try {
+    const response = await fetch(`/api/get_arts_info?limit=${limit}&offset=${offset}`,
       {
-        id: items.value.length + 1,
-        title: 'Книга. «К.Э. Циолковский известный и неизвестный»/ сост. А.Л. Голованов, Е.А. Тимошенкова. - М.: «ГЕЛИОС», 2023.',
-        description: 'Книга в мягкой обложке. Рассказывает о жизненном пути великого человека, основоположника теоретической космонавтики Константина Эдуардовича Циолковского.',
-        imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63103841?originalName=3659866.jpg',
-        tag: 'Книги'
-      },
-      {
-        id: items.value.length + 2,
-        title: 'Брошюра. Как собирать горные породы и минералы. 45 стр.',
-        description: 'Местонахождение: Муниципальное бюджетное учреждение культуры "Краснотурьинский краеведческий музей',
-        imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63099146?originalName=3826657.jpg',
-        tag: 'Книги'
-      },
-      {
-        id: items.value.length + 3,
-        title: `Шмагин Вячеслав Николаевич "Скорбящий ангел"`,
-        description: `Местонахождение
-Федеральное государственное бюджетное учреждение культуры "Государственный центральный музей современной истории России"`,
-        imageUrl: 'https://goskatalog.ru/muzfo-imaginator/rest/images/original/63096049?originalName=46116_3.jpg',
-        tag: 'Живопись'
-      },
-    );
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: searchItem?.title,
+          path: searchItem?.path,
+          category: searchItem?.category,
+        }),
+      });
+    const data = await response.json();
+    // items.value = items.value.concat(data.map(mapBackendItem));
+    offset += limit;
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const loadMore = (page: number, done: () => void) => {
+  // disable.value = true;
+  loadContent().then((data) => {
+    if (!data.length) {
+      disable.value = true;
+      $q.notify({
+        message: 'Нет больше объектов с такими параметрами',
+        color: 'negative',
+        position: 'bottom',
+      });
+      done();
+      return;
+    }
+    // disable.value = false;
+
+    items.value = items.value.concat(data.map(mapBackendItem));
     done();
-  }, 2000);
+  }).catch(console.error);
 }
+
 </script>
 
 <style scoped lang="scss">

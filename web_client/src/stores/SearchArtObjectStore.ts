@@ -15,7 +15,7 @@ export const useSerchArtObjectStore = defineStore('SerchArtObjectStore', () => {
     const formData = new FormData();
 
     if (searchItem?.image) {
-      formData.append('image', searchItem.image);
+      formData.append('file', searchItem.image);
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
