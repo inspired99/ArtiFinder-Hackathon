@@ -36,7 +36,9 @@ def insert_image_helper(art: ArtModel, cursor):
         (art.title, art.path, art.category, art.description)
     )
 
-    # art_id = cursor.lastrowid
-    art_id = cursor.fetchone()[0]
+    cursor.execute(
+        f"SELECT id FROM images WHERE path = '{art.path}'"
+    )
+    art_id = cursor.fetchone()['id']
 
     return art_id, art
