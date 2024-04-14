@@ -10,7 +10,7 @@ async def upload_image_helper(
 ):
     unique_id = uuid.uuid4()
     filename = f"{unique_id}_{file.filename}"
-    file_location = f"{UPLOADS_PATH}/{filename}"
+    file_location = f"{IMAGES_PATH}/{filename}"
 
     os.makedirs(os.path.dirname(file_location), exist_ok=True)
 
