@@ -27,6 +27,10 @@ def get_arts_info_helper(query: ArtQuery, cursor, limit=10, offset=0, ids=None):
 
     result = [dict(r) for r in records]
 
+    if ids:
+        index_map = {id: index for index, id in enumerate(ids)}
+        result.sort(key=lambda x: index_map[x['id']])
+    
     return result
 
 
