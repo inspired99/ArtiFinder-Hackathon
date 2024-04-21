@@ -106,6 +106,19 @@ async def log_requests(request: Request, call_next):
 app.include_router(router, prefix="/api")
 
 
+def fill_embeddings_db_from_postgresql_db():
+    from tqdm import tqdm
+
+    with get_db_cursor() as cursor:
+        cursor.execute("SELECT id, path FROM images")
+        results = cursor.fetchall()
+
+    for result in tqdm(results):
+        emb = ml_framework.get_img_embedding(result['path'])
+        embeddings_database.add_embedding(emb, result['id'])
+
+    embeddings_database.save_database()
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
